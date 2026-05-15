@@ -1,0 +1,389 @@
+/* ─────────────────────────────────────────────
+   CIRCLE PAGE — Full-screen dramatic portal
+───────────────────────────────────────────── */
+
+/* Prevent FOUC */
+body.circle-page {
+  overflow: hidden;
+}
+body.circle-page.loaded {
+  overflow: auto;
+}
+
+/* ─────────────────────────────────────────────
+   BACKGROUND LAYERS
+───────────────────────────────────────────── */
+.circle-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background: var(--bg);
+}
+
+/* Radial hellfire glow from center-bottom */
+.circle-bg::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse 80% 60% at 50% 110%,
+    var(--crimson) 0%,
+    transparent 60%
+  );
+  opacity: 0;
+  transition: opacity 1.5s ease-out;
+}
+body.loaded .circle-bg::after {
+  opacity: 0.4;
+}
+
+/* Animated slow ember/fire vignette around edges */
+.circle-bg-vignette {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse 100% 100% at 50% 50%,
+    transparent 40%,
+    #05000a 100%
+  );
+}
+
+/* Fire canvas for circle pages */
+#circle-fire {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 45%;
+  pointer-events: none;
+  z-index: 2;
+  opacity: 0.25;
+}
+
+/* ─────────────────────────────────────────────
+   MAIN CONTENT
+───────────────────────────────────────────── */
+.circle-wrapper {
+  position: relative;
+  z-index: 10;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 2rem;
+  text-align: center;
+}
+
+/* ─────────────────────────────────────────────
+   TOP NAV
+───────────────────────────────────────────── */
+.circle-nav {
+  position: fixed;
+  top: 1.5rem;
+  left: 0;
+  right: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2rem;
+  opacity: 0;
+  transform: translateY(-10px);
+  transition:
+    opacity 1s ease 1.5s,
+    transform 1s ease 1.5s;
+}
+body.loaded .circle-nav {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.nav-home {
+  font-family: var(--font-body);
+  font-style: italic;
+  font-size: 0.75rem;
+  color: var(--ash-dim);
+  letter-spacing: 0.15em;
+  opacity: 0.6;
+  transition:
+    opacity 0.3s,
+    color 0.3s;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.nav-home:hover {
+  opacity: 1;
+  color: var(--ember);
+}
+
+.nav-arrows {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.nav-prev,
+.nav-next {
+  font-family: var(--font-title);
+  font-size: 0.6rem;
+  letter-spacing: 0.15em;
+  color: var(--ash-dim);
+  opacity: 0.5;
+  transition:
+    opacity 0.3s,
+    color 0.3s;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.nav-prev:hover,
+.nav-next:hover {
+  opacity: 1;
+  color: var(--ember);
+}
+.nav-prev.hidden,
+.nav-next.hidden {
+  visibility: hidden;
+}
+
+/* ─────────────────────────────────────────────
+   CIRCLE NUMBER & SIN
+───────────────────────────────────────────── */
+.circle-number {
+  font-family: var(--font-title);
+  font-size: clamp(5rem, 18vw, 12rem);
+  font-weight: 900;
+  line-height: 1;
+  color: transparent;
+  -webkit-text-stroke: 1px var(--crimson);
+  text-shadow: none;
+  letter-spacing: -0.03em;
+  opacity: 0;
+  transform: scale(1.3);
+  transition:
+    opacity 0.8s ease 0.3s,
+    transform 0.8s ease 0.3s;
+  user-select: none;
+  margin-bottom: -0.1em;
+}
+body.loaded .circle-number {
+  opacity: 0.18;
+  transform: scale(1);
+}
+
+.circle-sin-label {
+  font-family: var(--font-title);
+  font-size: clamp(0.55rem, 1.5vw, 0.8rem);
+  letter-spacing: 0.5em;
+  text-transform: uppercase;
+  color: var(--ash-dim);
+  opacity: 0;
+  transform: translateY(10px);
+  transition:
+    opacity 0.8s ease 0.5s,
+    transform 0.8s ease 0.5s;
+  margin-bottom: 0.4rem;
+}
+body.loaded .circle-sin-label {
+  opacity: 0.55;
+  transform: translateY(0);
+}
+
+.circle-sin-name {
+  font-family: var(--font-title);
+  font-size: clamp(2rem, 6vw, 4.5rem);
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ember2);
+  text-shadow:
+    var(--glow-ember),
+    0 0 80px #ff450030;
+  opacity: 0;
+  transform: translateY(20px);
+  transition:
+    opacity 0.9s ease 0.7s,
+    transform 0.9s ease 0.7s;
+  margin-bottom: 0.5rem;
+}
+body.loaded .circle-sin-name {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Decorative rule */
+.circle-rule {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin: 1.2rem auto;
+  width: clamp(200px, 50%, 400px);
+  opacity: 0;
+  transition: opacity 1s ease 1s;
+}
+body.loaded .circle-rule {
+  opacity: 1;
+}
+
+.circle-rule::before,
+.circle-rule::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--crimson));
+}
+.circle-rule::after {
+  background: linear-gradient(90deg, var(--crimson), transparent);
+}
+.circle-rule-icon {
+  color: var(--crimson);
+  font-size: 0.7rem;
+  opacity: 0.8;
+}
+
+/* ─────────────────────────────────────────────
+   SITE NAME & DESCRIPTION
+───────────────────────────────────────────── */
+.circle-site-name {
+  font-family: var(--font-title);
+  font-size: clamp(1rem, 3vw, 1.8rem);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--gold2);
+  text-shadow: var(--glow-gold);
+  opacity: 0;
+  transform: translateY(15px);
+  transition:
+    opacity 0.8s ease 1.1s,
+    transform 0.8s ease 1.1s;
+  margin-bottom: 0.8rem;
+}
+body.loaded .circle-site-name {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.circle-description {
+  font-family: var(--font-body);
+  font-style: italic;
+  font-size: clamp(0.85rem, 2vw, 1.05rem);
+  color: var(--ash-dim);
+  line-height: 1.7;
+  max-width: 520px;
+  margin: 0 auto 2.5rem;
+  opacity: 0;
+  transform: translateY(12px);
+  transition:
+    opacity 0.8s ease 1.3s,
+    transform 0.8s ease 1.3s;
+}
+body.loaded .circle-description {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ─────────────────────────────────────────────
+   ENTER BUTTON
+───────────────────────────────────────────── */
+.enter-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
+  font-family: var(--font-title);
+  font-size: clamp(0.65rem, 1.5vw, 0.82rem);
+  font-weight: 700;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: var(--ash);
+  background: transparent;
+  border: 1px solid var(--crimson2);
+  padding: 0.9em 2.5em;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(10px);
+  transition:
+    opacity 0.8s ease 1.5s,
+    transform 0.8s ease 1.5s,
+    border-color 0.3s,
+    color 0.3s,
+    box-shadow 0.3s;
+  text-decoration: none;
+}
+body.loaded .enter-btn {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.enter-btn::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--crimson) 50%,
+    transparent 100%
+  );
+  transform: translateX(-110%);
+  transition: transform 0.45s ease;
+  opacity: 0.35;
+}
+.enter-btn:hover::before {
+  transform: translateX(110%);
+}
+.enter-btn:hover {
+  border-color: var(--ember);
+  color: var(--ember2);
+  box-shadow: var(--glow-ember);
+}
+
+/* Pulse glow animation on the button */
+@keyframes btnPulse {
+  0%,
+  100% {
+    box-shadow:
+      0 0 10px #8b000040,
+      0 0 30px #8b000020;
+  }
+  50% {
+    box-shadow:
+      0 0 20px #8b000080,
+      0 0 60px #8b000040;
+  }
+}
+body.loaded .enter-btn {
+  animation: btnPulse 3s ease-in-out 2s infinite;
+}
+body.loaded .enter-btn:hover {
+  animation: none;
+}
+
+/* ─────────────────────────────────────────────
+   CIRCLE NUMBER POSITION (big ghost behind)
+───────────────────────────────────────────── */
+.ghost-numeral-wrap {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* ─────────────────────────────────────────────
+   RESPONSIVE
+───────────────────────────────────────────── */
+@media (max-width: 600px) {
+  .circle-nav {
+    padding: 0 1rem;
+  }
+  .circle-wrapper {
+    padding: 5rem 1.5rem 3rem;
+  }
+}

@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Hell of The Internet — Who Are You?</title>
+  <meta name="description" content="Before you descend or ascend, you must be judged. Answer honestly.">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ctext y='28' font-size='28'%3E⚖%3C/text%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=IM+Fell+English:ital@0;1&display=swap">
+  <style>
+    :root {
+      --bg: #0e0e12; --fog: #16161e;
+      --ash: #e8e0d0; --ash-dim: #7a7070;
+      --hell: #8b0000; --hell2: #ff4500;
+      --heaven: #8fd4ff; --heaven2: #e8b4ff;
+      --gold: #c9a84c;
+      --font-title: 'Cinzel Decorative', serif;
+      --font-body: 'IM Fell English', serif;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(--ash); font-family: var(--font-body); }
+
+    body::before {
+      content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 9999; opacity: 0.035;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size: 200px 200px;
+    }
+
+    .fog-layer { position: fixed; inset: 0; pointer-events: none; z-index: 2;
+      background: radial-gradient(ellipse 120% 80% at 50% 50%, transparent 20%, #0e0e12cc 70%, #0e0e12 100%); }
+
+    .mist { position: fixed; inset: 0; pointer-events: none; z-index: 1; overflow: hidden; }
+    .mist-band {
+      position: absolute; left: -20%; right: -20%; height: 120px;
+      background: linear-gradient(90deg, transparent 0%, #ffffff06 20%, #ffffff0a 50%, #ffffff06 80%, transparent 100%);
+      filter: blur(18px); border-radius: 50%; animation: mistDrift linear infinite;
+    }
+    .mist-band:nth-child(1) { top: 15%; animation-duration: 28s; animation-delay: 0s;    opacity: 0.7; }
+    .mist-band:nth-child(2) { top: 35%; animation-duration: 38s; animation-delay: -10s;  opacity: 0.5; height: 80px; }
+    .mist-band:nth-child(3) { top: 55%; animation-duration: 32s; animation-delay: -6s;   opacity: 0.6; height: 100px; }
+    .mist-band:nth-child(4) { top: 72%; animation-duration: 44s; animation-delay: -18s;  opacity: 0.4; height: 60px; }
+    .mist-band:nth-child(5) { top: 88%; animation-duration: 25s; animation-delay: -3s;   opacity: 0.55; height: 90px; }
+    @keyframes mistDrift {
+      0%   { transform: translateX(-10%) scaleY(1); }
+      50%  { transform: translateX(8%) scaleY(1.08); }
+      100% { transform: translateX(-10%) scaleY(1); }
+    }
+
+    .stage {
+      position: relative; z-index: 10; height: 100vh;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      padding: 2rem; text-align: center;
+    }
+
+    .site-eyebrow {
+      position: fixed; top: 2rem; left: 50%; transform: translateX(-50%);
+      font-family: var(--font-title); font-size: clamp(0.45rem, 1.2vw, 0.6rem);
+      letter-spacing: 0.45em; text-transform: uppercase; color: var(--ash-dim);
+      opacity: 0; animation: fadeUp 1s ease-out 0.3s both; white-space: nowrap;
+    }
+
+    .scales-icon {
+      font-size: clamp(2rem, 5vw, 3.2rem); margin-bottom: 1.8rem;
+      opacity: 0; animation: fadeUp 1s ease-out 0.8s both;
+      filter: drop-shadow(0 0 20px #ffffff30);
+    }
+
+    .dilemma-label {
+      font-family: var(--font-body); font-style: italic;
+      font-size: clamp(0.65rem, 1.5vw, 0.82rem); letter-spacing: 0.3em;
+      color: var(--ash-dim); text-transform: uppercase;
+      opacity: 0; animation: fadeUp 1s ease-out 1.2s both; margin-bottom: 1.5rem;
+    }
+
+    .dilemma-question {
+      font-family: var(--font-body); font-style: italic;
+      font-size: clamp(1.05rem, 3vw, 1.85rem); line-height: 1.6;
+      color: var(--ash); max-width: 660px;
+      opacity: 0; animation: fadeUp 1.2s ease-out 1.6s both; margin-bottom: 3rem;
+    }
+
+    .choices {
+      display: flex; align-items: stretch; gap: 0;
+      width: 100%; max-width: 680px;
+      opacity: 0; animation: fadeUp 1s ease-out 2.2s both;
+      border: 1px solid #ffffff12;
+    }
+
+    .choice-divider {
+      width: 1px; flex-shrink: 0;
+      background: linear-gradient(to bottom, transparent, #ffffff20 30%, #ffffff20 70%, transparent);
+    }
+
+    .choice-btn {
+      flex: 1; display: flex; flex-direction: column; align-items: center;
+      justify-content: center; gap: 0.75rem; padding: 2rem 1.5rem;
+      background: transparent; border: none; cursor: pointer;
+      font-family: var(--font-body); color: var(--ash);
+      transition: background 0.4s; position: relative; overflow: hidden; text-align: center;
+    }
+    .choice-btn::before {
+      content: ''; position: absolute; inset: 0; opacity: 0; transition: opacity 0.5s; pointer-events: none;
+    }
+    .choice-btn.hell-btn::before   { background: radial-gradient(ellipse at 50% 100%, #8b000045 0%, transparent 70%); }
+    .choice-btn.heaven-btn::before { background: radial-gradient(ellipse at 50% 0%, #8fd4ff20 0%, transparent 70%); }
+    .choice-btn:hover::before { opacity: 1; }
+    .choice-btn.hell-btn:hover     { background: #8b000015; }
+    .choice-btn.heaven-btn:hover   { background: #8fd4ff0d; }
+
+    .choice-icon {
+      font-size: clamp(1.5rem, 4vw, 2.4rem);
+      transition: transform 0.4s, filter 0.4s;
+    }
+    .choice-btn:hover .choice-icon           { transform: scale(1.15); }
+    .choice-btn.hell-btn:hover .choice-icon  { filter: drop-shadow(0 0 12px #ff4500cc); }
+    .choice-btn.heaven-btn:hover .choice-icon{ filter: drop-shadow(0 0 14px #8fd4ffcc); }
+
+    .choice-label {
+      font-family: var(--font-title); font-size: clamp(0.55rem, 1.3vw, 0.72rem); letter-spacing: 0.35em; text-transform: uppercase;
+    }
+    .choice-btn.hell-btn   .choice-label { color: #cc4422; }
+    .choice-btn.heaven-btn .choice-label { color: var(--heaven); }
+
+    .choice-text {
+      font-family: var(--font-body); font-style: italic;
+      font-size: clamp(0.78rem, 1.6vw, 0.96rem); color: var(--ash-dim);
+      line-height: 1.55; max-width: 240px; transition: color 0.3s;
+    }
+    .choice-btn:hover .choice-text { color: var(--ash); }
+
+    .judgment-footer {
+      position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%);
+      font-family: var(--font-body); font-style: italic;
+      font-size: 0.65rem; letter-spacing: 0.18em; color: var(--ash-dim);
+      opacity: 0; animation: fadeUp 1s ease-out 3s both; white-space: nowrap;
+    }
+
+    #transition-overlay {
+      position: fixed; inset: 0; z-index: 1000;
+      pointer-events: none; opacity: 0;
+    }
+    #transition-overlay.active { pointer-events: all; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 560px) {
+      .choices { flex-direction: column; }
+      .choice-divider { width: 100%; height: 1px;
+        background: linear-gradient(to right, transparent, #ffffff20 30%, #ffffff20 70%, transparent); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="mist" aria-hidden="true">
+    <div class="mist-band"></div><div class="mist-band"></div>
+    <div class="mist-band"></div><div class="mist-band"></div>
+    <div class="mist-band"></div>
+  </div>
+  <div class="fog-layer" aria-hidden="true"></div>
+  <div id="transition-overlay" aria-hidden="true"></div>
+
+  <div class="stage" role="main">
+    <p class="site-eyebrow">The Hell of The Internet &nbsp;·&nbsp; Judgment</p>
+    <div class="scales-icon" aria-hidden="true">⚖</div>
+    <p class="dilemma-label">Before you enter — a dilemma</p>
+
+    <!-- ── REPLACE THIS with your own question ── -->
+    <p class="dilemma-question" id="dilemma-text">
+      "You discover something extraordinary online — something that took years to build,
+      given away for free. Do you share it, or keep it as your private advantage?"
+    </p>
+
+    <div class="choices" role="group" aria-label="Make your choice">
+
+      <!-- ── HEAVEN choice: replace label + text with your own ── -->
+      <button class="choice-btn heaven-btn" onclick="judgeMe('heaven')" aria-label="Choose Heaven">
+        <span class="choice-icon">✦</span>
+        <span class="choice-label">Share it</span>
+        <span class="choice-text">The internet becomes what we give it. You share freely.</span>
+      </button>
+
+      <div class="choice-divider" aria-hidden="true"></div>
+
+      <!-- ── HELL choice: replace label + text with your own ── -->
+      <button class="choice-btn hell-btn" onclick="judgeMe('hell')" aria-label="Choose Hell">
+        <span class="choice-icon">🔥</span>
+        <span class="choice-label">Keep it</span>
+        <span class="choice-text">Knowledge hoarded is power. You close the tab and move on.</span>
+      </button>
+
+    </div>
+  </div>
+
+  <p class="judgment-footer">Answer honestly. The internet already knows.</p>
+
+  <script src="js/judgment.js"></script>
+</body>
+</html>

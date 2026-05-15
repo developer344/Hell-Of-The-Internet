@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hell — The Hell of The Internet</title>
+    <meta
+      name="description"
+      content="Descend into the nine circles. Each sin, a domain. Each domain, a world."
+    />
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ctext y='28' font-size='28'%3E🔥%3C/text%3E%3C/svg%3E"
+    />
+    <link rel="stylesheet" href="css/style.css" />
+    <style>
+      /* Extra landing-only styles */
+      .hell-intro {
+        text-align: center;
+        margin-bottom: 1rem;
+        opacity: 0;
+        animation: bandReveal 1s ease-out 2s both;
+      }
+      .hell-intro p {
+        font-family: var(--font-body);
+        font-style: italic;
+        font-size: 0.78rem;
+        color: var(--ash-dim);
+        letter-spacing: 0.18em;
+        opacity: 0.6;
+      }
+      .hell-label-top {
+        font-family: var(--font-title);
+        font-size: 0.55rem;
+        letter-spacing: 0.5em;
+        color: var(--ash-dim);
+        text-transform: uppercase;
+        opacity: 0.35;
+        margin-bottom: 0.5rem;
+      }
+      .hell-label-bottom {
+        font-family: var(--font-title);
+        font-size: 0.55rem;
+        letter-spacing: 0.5em;
+        color: var(--ember);
+        text-transform: uppercase;
+        opacity: 0.45;
+        margin-top: 0.5rem;
+      }
+      /* Subtle vertical line connecting circles — left and right trapezoid edges */
+      .funnel-edge-left,
+      .funnel-edge-right {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 0;
+        border-left: 1px dashed var(--crimson);
+        opacity: 0.15;
+        pointer-events: none;
+      }
+      .funnel-edge-left {
+        left: 4%;
+      }
+      .funnel-edge-right {
+        right: 4%;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Fire particles canvas -->
+    <canvas id="fire-canvas" aria-hidden="true"></canvas>
+
+    <!-- Main wrapper -->
+    <div class="landing-wrapper">
+      <!-- Header -->
+      <header class="site-header">
+        <span class="the">The</span>
+        <h1>Hell of<br /><span>The Internet</span></h1>
+        <span class="tagline">Lasciate ogne speranza, voi ch'intrate</span>
+      </header>
+
+      <!-- Descent guide text -->
+      <div class="hell-intro">
+        <p>Nine circles. Nine domains. Choose your damnation.</p>
+      </div>
+
+      <!-- Hell funnel -->
+      <nav class="hell-funnel" aria-label="The Nine Circles of Hell">
+        <p class="hell-label-top">THE SURFACE</p>
+
+        <!-- ── CIRCLE I ── -->
+        <a
+          href="circle-1.html"
+          class="circle-band"
+          aria-label="Circle I — LIMBO"
+        >
+          <div class="band-content">
+            <span class="band-numeral">I</span>
+            <span class="band-divider"></span>
+            <span class="band-sin">LIMBO</span>
+            <span class="band-site">— YOUR SITE NAME —</span>
+            <span class="band-arrow">▶</span>
+          </div>
+        </a>
+
+        <!-- ── CIRCLE II ── -->
+        <a
+          href="circle-2.html"
+          class="circle-band"
+          aria-label="Circle II — LUST"
+        >
+          <div class="band-content">
+            <span class="band-numeral">II</span>
+            <span class="band-divider"></span>
+            <span class="band-sin">LUST</span>
+            <span class="band-site">— YOUR SITE NAME —</span>
+            <span class="band-arrow">▶</span>
+          </div>
+        </a>
+
+        <!-- ── CIRCLE III ── -->
+        <a
+          href="circle-3.html"
+          class="circle-band"
+          aria-label="Circle III — GLUTTONY"
+        >
+          <div class="band-content">
+            <span class="band-numeral">III</span>
+            <span class="band-divider"></span>
+            <span class="band-sin">GLUTTONY</span>
+            <span class="band-site">— YOUR SITE NAME —</span>
+            <span class="band-arrow">▶</span>
+          </div>
+        </a>
+
+        <!-- ── CIRCLE IV ── -->
+        <a
+          href="circle-4.html"
+          class="circle-band"
+          aria-label="Circle IV — GREED"
+        >
+          <div class="band-content">
+            <span class="band-numeral">IV</span>
+            <span class="band-divider"></span>
+            <span class="band-sin">GREED</span>
+            <span class="band-site">— YOUR SITE NAME —</span>
+            <span class="band-arrow">▶</span>
+          </div>
+        </a>
+
+        <!-- ── CIRCLE V ── -->
+        <a
+          href="circle-5.html"
+          class="circle-band"
+          aria-label="Circle V — WRATH"
+        >
+          <div class="band-content">
+            <span class="band-numeral">V</span>
+            <span class="band-divider"></span>
+            <span class="band-sin">WRATH</span>
+            <span class="band-site">— YOUR SITE NAME —</span>
+            <span class="band-arrow">▶</span>
+          </div>
+        </a>
+
+        <!-- ── CIRCLE VI ── -->
+        <a
+          href="circle-6.html"
+          class="circle-band"
+          aria-label="Circle VI — HERESY"
+        >
+          <div class="band-content">
+            <span class="band-numeral">VI</span>
+            <span class="band-divider"></span>
+            <span class="band-sin">HERESY</span>
+            <span class="band-site">— YOUR SITE NAME —</span>
+            <span class="band-arrow">▶</span>
+          </div>
+        </a>
+
+        <!-- ── CIRCLE VII ── -->
+        <a
+          href="circle-7.html"
+          class="circle-band"
+          aria-label="Circle VII — VIOLENCE"
+        >
+          <div class="band-content">
+            <span class="band-numeral">VII</span>
+            <span class="band-divider"></span>
+            <span class="band-sin">VIOLENCE</span>
+            <span class="band-site">— YOUR SITE NAME —</span>
+            <span class="band-arrow">▶</span>
+          </div>
+        </a>
+
+        <!-- ── CIRCLE VIII ── -->
+        <a
+          href="circle-8.html"
+          class="circle-band"
+          aria-label="Circle VIII — FRAUD"
+        >
+          <div class="band-content">
+            <span class="band-numeral">VIII</span>
+            <span class="band-divider"></span>
+            <span class="band-sin">FRAUD</span>
+            <span class="band-site">— YOUR SITE NAME —</span>
+            <span class="band-arrow">▶</span>
+          </div>
+        </a>
+
+        <!-- ── CIRCLE IX ── -->
+        <a
+          href="circle-9.html"
+          class="circle-band"
+          aria-label="Circle IX — TREACHERY"
+        >
+          <div class="band-content">
+            <span class="band-numeral">IX</span>
+            <span class="band-divider"></span>
+            <span class="band-sin">TREACHERY</span>
+            <span class="band-site">— YOUR SITE NAME —</span>
+            <span class="band-arrow">▶</span>
+          </div>
+        </a>
+
+        <p class="hell-label-bottom">THE PIT</p>
+      </nav>
+
+      <!-- Footer inscription -->
+      <footer class="landing-footer">
+        <p>
+          Per me si va ne la città dolente &nbsp;·&nbsp; Through me you enter
+          the city of woe
+        </p>
+        <p style="margin-top: 1.4rem">
+          <a
+            href="index.html"
+            style="
+              color: var(--ash-dim);
+              letter-spacing: 0.2em;
+              font-size: 0.68rem;
+              font-family: var(--font-title);
+              opacity: 0.45;
+              transition: opacity 0.3s;
+            "
+            onmouseover="this.style.opacity = '1'"
+            onmouseout="this.style.opacity = '0.45'"
+            >← Replay the Dilemma</a
+          >
+        </p>
+      </footer>
+    </div>
+
+    <script src="js/main.js"></script>
+  </body>
+</html>

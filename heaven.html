@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Heaven — The Hell of The Internet</title>
+  <meta name="description" content="The good internet. Wander freely. Discover.">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ctext y='28' font-size='28'%3E✦%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="css/heaven.css">
+</head>
+<body class="heaven-page">
+
+  <canvas id="heaven-canvas" aria-hidden="true"></canvas>
+
+  <nav class="heaven-nav">
+    <a href="index.html" class="heaven-nav-home">← Replay the Dilemma</a>
+    <span class="heaven-nav-title">Heaven · The Good Internet</span>
+    <span class="wander-hint" aria-hidden="true">wander to discover</span>
+  </nav>
+
+  <!-- Site portal overlay -->
+  <div id="heaven-portal" role="dialog" aria-modal="true" aria-hidden="true">
+    <button class="portal-close" onclick="closePortal()">✕ &nbsp;close</button>
+    <p class="portal-virtue-label">Virtue of the Internet</p>
+    <h2 class="portal-virtue-name" id="portal-virtue-name">OPENNESS</h2>
+    <div class="portal-rule"><span class="portal-rule-icon">✦</span></div>
+    <h3 class="portal-site-name" id="portal-site-name">— YOUR SITE —</h3>
+    <p class="portal-description" id="portal-description">Description.</p>
+    <a href="#" class="portal-enter-btn" id="portal-enter-btn" target="_blank" rel="noopener noreferrer">✦ &nbsp;Visit &nbsp;✦</a>
+  </div>
+
+  <!-- Decorative click message -->
+  <div id="garden-msg" aria-live="polite"></div>
+
+  <!-- Minimap -->
+  <div id="minimap"><div id="minimap-vp"></div></div>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       THE GARDEN — 2800 × 2000 wanderable world
+       
+       SITE CRYSTALS  (.garden-crystal)
+         data-virtue  — virtue label shown in portal
+         data-name    — your site name
+         data-desc    — your site description
+         data-url     — your site URL
+         data-color   — cyan | pink | purple | gold | mint
+
+       DECORATIVE OBJECTS — click for atmosphere, no portal
+         .garden-tree
+         .garden-fountain
+         .garden-flower-patch  (.garden-flower children: .pink .purple .cyan .gold .white)
+         .garden-mushroom-cluster  (.garden-mushroom children: .large/.medium/.small + .pink/.purple/.gold/.cyan)
+         .garden-lantern
+       ════════════════════════════════════════════════════════ -->
+  <div id="garden-viewport">
+    <div id="garden-world">
+
+      <!-- ══ TREES ══ -->
+      <div class="garden-tree" style="left:640px;top:760px;" data-msg="The forest is always older than you think.">
+        <div class="tree-canopy"></div>
+        <div class="tree-trunk"></div>
+      </div>
+      <div class="garden-tree large" style="left:1330px;top:660px;" data-msg="Roots grow in silence. So do good ideas.">
+        <div class="tree-canopy"></div>
+        <div class="tree-trunk"></div>
+      </div>
+      <div class="garden-tree" style="left:1880px;top:900px;" data-msg="Even dead trees make homes for others.">
+        <div class="tree-canopy"></div>
+        <div class="tree-trunk"></div>
+      </div>
+      <div class="garden-tree small" style="left:540px;top:1290px;" data-msg="Something small, growing.">
+        <div class="tree-canopy"></div>
+        <div class="tree-trunk"></div>
+      </div>
+      <div class="garden-tree large" style="left:2340px;top:1380px;" data-msg="Far from the path, the oldest tree.">
+        <div class="tree-canopy"></div>
+        <div class="tree-trunk"></div>
+      </div>
+
+      <!-- ══ CENTRAL FOUNTAIN ══ -->
+      <div class="garden-fountain" style="left:1400px;top:970px;" data-msg="Still waters dream in colour.">
+        <div class="fountain-spout"></div>
+        <div class="fountain-bowl-top"></div>
+        <div class="fountain-column"></div>
+        <div class="fountain-base-wrap">
+          <div class="fountain-base"></div>
+          <div class="fountain-ring r1"></div>
+          <div class="fountain-ring r2"></div>
+          <div class="fountain-ring r3"></div>
+        </div>
+      </div>
+
+      <!-- ══ FLOWER PATCHES ══ -->
+      <div class="garden-flower-patch" style="left:1080px;top:590px;" data-msg="They bloom for no one, and everyone.">
+        <div class="garden-flower pink" style="--sh:28px"><div class="flower-head"></div><div class="flower-stem"></div></div>
+        <div class="garden-flower white" style="--sh:22px"><div class="flower-head"></div><div class="flower-stem"></div></div>
+        <div class="garden-flower purple" style="--sh:32px"><div class="flower-head"></div><div class="flower-stem"></div></div>
+        <div class="garden-flower pink" style="--sh:20px"><div class="flower-head"></div><div class="flower-stem"></div></div>
+        <div class="garden-flower cyan" style="--sh:26px"><div class="flower-head"></div><div class="flower-stem"></div></div>
+      </div>
+
+      <div class="garden-flower-patch" style="left:240px;top:880px;" data-msg="A quiet corner the algorithms never found.">
+        <div class="garden-flower gold" style="--sh:24px"><div class="flower-head"></div><div class="flower-stem"></div></div>
+        <div class="garden-flower white" style="--sh:30px"><div class="flower-head"></div><div class="flower-stem"></div></div>
+        <div class="garden-flower gold" style="--sh:18px"><div class="flower-head"></div><div class="flower-stem"></div></div>
+      </div>
+
+      <div class="garden-flower-patch" style="left:2370px;top:680px;" data-msg="Beauty without purpose is still beauty.">
+        <div class="garden-flower cyan" style="--sh:26px"><div class="flower-head"></div><div class="flower-stem"></div></div>
+        <div class="garden-flower purple" style="--sh:20px"><div class="flower-head"></div><div class="flower-stem"></div></div>
+        <div class="garden-flower pink" style="--sh:30px"><div class="flower-head"></div><div class="flower-stem"></div></div>
+        <div class="garden-flower white" style="--sh:22px"><div class="flower-head"></div><div class="flower-stem"></div></div>
+      </div>
+
+      <div class="garden-flower-patch" style="left:1700px;top:1700px;" data-msg="At the edge of the map, flowers still grow.">
+        <div class="garden-flower pink" style="--sh:22px"><div class="flower-head"></div><div class="flower-stem"></div></div>
+        <div class="garden-flower gold" style="--sh:28px"><div class="flower-head"></div><div class="flower-stem"></div></div>
+        <div class="garden-flower pink" style="--sh:18px"><div class="flower-head"></div><div class="flower-stem"></div></div>
+      </div>
+
+      <!-- ══ MUSHROOM CLUSTERS ══ -->
+      <div class="garden-mushroom-cluster" style="left:550px;top:510px;" data-msg="Something grows here, patient and silent.">
+        <div class="garden-mushroom small purple"><div class="mushroom-cap"></div><div class="mushroom-stem"></div></div>
+        <div class="garden-mushroom large pink"><div class="mushroom-cap"></div><div class="mushroom-stem"></div></div>
+        <div class="garden-mushroom medium purple"><div class="mushroom-cap"></div><div class="mushroom-stem"></div></div>
+        <div class="garden-mushroom small gold"><div class="mushroom-cap"></div><div class="mushroom-stem"></div></div>
+      </div>
+
+      <div class="garden-mushroom-cluster" style="left:1650px;top:1260px;" data-msg="In the dark, luminous things survive.">
+        <div class="garden-mushroom medium cyan"><div class="mushroom-cap"></div><div class="mushroom-stem"></div></div>
+        <div class="garden-mushroom large purple"><div class="mushroom-cap"></div><div class="mushroom-stem"></div></div>
+        <div class="garden-mushroom small cyan"><div class="mushroom-cap"></div><div class="mushroom-stem"></div></div>
+      </div>
+
+      <div class="garden-mushroom-cluster" style="left:2100px;top:1800px;" data-msg="The last corner of the garden. You found it.">
+        <div class="garden-mushroom large gold"><div class="mushroom-cap"></div><div class="mushroom-stem"></div></div>
+        <div class="garden-mushroom small pink"><div class="mushroom-cap"></div><div class="mushroom-stem"></div></div>
+        <div class="garden-mushroom medium gold"><div class="mushroom-cap"></div><div class="mushroom-stem"></div></div>
+      </div>
+
+      <!-- ══ LANTERNS ══ -->
+      <div class="garden-lantern" style="left:1180px;top:420px;" data-msg="Every light was once someone's idea.">
+        <div class="lantern-chain"></div>
+        <div class="lantern-top-cap"></div>
+        <div class="lantern-body"></div>
+        <div class="lantern-bottom-cap"></div>
+        <div class="lantern-glow-pool"></div>
+      </div>
+
+      <div class="garden-lantern" style="left:2040px;top:1310px;" data-msg="Light is most visible in the dark.">
+        <div class="lantern-chain"></div>
+        <div class="lantern-top-cap"></div>
+        <div class="lantern-body"></div>
+        <div class="lantern-bottom-cap"></div>
+        <div class="lantern-glow-pool"></div>
+      </div>
+
+      <div class="garden-lantern" style="left:350px;top:1650px;" data-msg="Someone left this on for you.">
+        <div class="lantern-chain"></div>
+        <div class="lantern-top-cap"></div>
+        <div class="lantern-body"></div>
+        <div class="lantern-bottom-cap"></div>
+        <div class="lantern-glow-pool"></div>
+      </div>
+
+      <!-- ══ SITE CRYSTALS (replace placeholders with your data) ══
+           data-virtue: the virtue name
+           data-name:   your site name
+           data-desc:   your site description
+           data-url:    your site URL
+           data-color:  cyan | pink | purple | gold | mint
+      -->
+
+      <div class="garden-crystal" style="left:480px;top:630px;"
+           data-virtue="OPENNESS" data-color="cyan"
+           data-name="— YOUR SITE NAME —"
+           data-desc="Why this site embodies openness. What does it give freely to the world?"
+           data-url="YOUR_SITE_URL">
+        <div class="crystal-gem"></div>
+        <div class="crystal-base-glow"></div>
+        <div class="crystal-pedestal"></div>
+        <span class="crystal-virtue-text">Openness</span>
+        <span class="crystal-enter-hint">click to enter</span>
+      </div>
+
+      <div class="garden-crystal" style="left:960px;top:310px;"
+           data-virtue="GENEROSITY" data-color="pink"
+           data-name="— YOUR SITE NAME —"
+           data-desc="Why this site embodies generosity. What does it give without expecting return?"
+           data-url="YOUR_SITE_URL">
+        <div class="crystal-gem"></div>
+        <div class="crystal-base-glow"></div>
+        <div class="crystal-pedestal"></div>
+        <span class="crystal-virtue-text">Generosity</span>
+        <span class="crystal-enter-hint">click to enter</span>
+      </div>
+
+      <div class="garden-crystal" style="left:1560px;top:480px;"
+           data-virtue="CRAFT" data-color="gold"
+           data-name="— YOUR SITE NAME —"
+           data-desc="Why this site embodies craft. What has been made with patience and skill?"
+           data-url="YOUR_SITE_URL">
+        <div class="crystal-gem"></div>
+        <div class="crystal-base-glow"></div>
+        <div class="crystal-pedestal"></div>
+        <span class="crystal-virtue-text">Craft</span>
+        <span class="crystal-enter-hint">click to enter</span>
+      </div>
+
+      <div class="garden-crystal" style="left:760px;top:1160px;"
+           data-virtue="CURIOSITY" data-color="purple"
+           data-name="— YOUR SITE NAME —"
+           data-desc="Why this site embodies curiosity. What does it make you want to learn?"
+           data-url="YOUR_SITE_URL">
+        <div class="crystal-gem"></div>
+        <div class="crystal-base-glow"></div>
+        <div class="crystal-pedestal"></div>
+        <span class="crystal-virtue-text">Curiosity</span>
+        <span class="crystal-enter-hint">click to enter</span>
+      </div>
+
+      <div class="garden-crystal" style="left:2080px;top:360px;"
+           data-virtue="BEAUTY" data-color="pink"
+           data-name="— YOUR SITE NAME —"
+           data-desc="Why this site embodies beauty. What about it moves you?"
+           data-url="YOUR_SITE_URL">
+        <div class="crystal-gem"></div>
+        <div class="crystal-base-glow"></div>
+        <div class="crystal-pedestal"></div>
+        <span class="crystal-virtue-text">Beauty</span>
+        <span class="crystal-enter-hint">click to enter</span>
+      </div>
+
+      <div class="garden-crystal" style="left:360px;top:1490px;"
+           data-virtue="TRUTH" data-color="cyan"
+           data-name="— YOUR SITE NAME —"
+           data-desc="Why this site embodies truth. What does it refuse to obscure?"
+           data-url="YOUR_SITE_URL">
+        <div class="crystal-gem"></div>
+        <div class="crystal-base-glow"></div>
+        <div class="crystal-pedestal"></div>
+        <span class="crystal-virtue-text">Truth</span>
+        <span class="crystal-enter-hint">click to enter</span>
+      </div>
+
+      <div class="garden-crystal" style="left:1500px;top:1520px;"
+           data-virtue="PLAY" data-color="gold"
+           data-name="— YOUR SITE NAME —"
+           data-desc="Why this site embodies play. What delight does it offer for no reason at all?"
+           data-url="YOUR_SITE_URL">
+        <div class="crystal-gem"></div>
+        <div class="crystal-base-glow"></div>
+        <div class="crystal-pedestal"></div>
+        <span class="crystal-virtue-text">Play</span>
+        <span class="crystal-enter-hint">click to enter</span>
+      </div>
+
+      <div class="garden-crystal" style="left:2260px;top:1080px;"
+           data-virtue="MEMORY" data-color="purple"
+           data-name="— YOUR SITE NAME —"
+           data-desc="Why this site embodies memory. What does it preserve that might otherwise disappear?"
+           data-url="YOUR_SITE_URL">
+        <div class="crystal-gem"></div>
+        <div class="crystal-base-glow"></div>
+        <div class="crystal-pedestal"></div>
+        <span class="crystal-virtue-text">Memory</span>
+        <span class="crystal-enter-hint">click to enter</span>
+      </div>
+
+      <div class="garden-crystal" style="left:1900px;top:1650px;"
+           data-virtue="WONDER" data-color="mint"
+           data-name="— YOUR SITE NAME —"
+           data-desc="Why this site embodies wonder. What does it reveal that you could not have imagined?"
+           data-url="YOUR_SITE_URL">
+        <div class="crystal-gem"></div>
+        <div class="crystal-base-glow"></div>
+        <div class="crystal-pedestal"></div>
+        <span class="crystal-virtue-text">Wonder</span>
+        <span class="crystal-enter-hint">click to enter</span>
+      </div>
+
+    </div><!-- /garden-world -->
+  </div><!-- /garden-viewport -->
+
+  <script src="js/heaven.js"></script>
+</body>
+</html>

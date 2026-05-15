@@ -1,0 +1,526 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=IM+Fell+English:ital@0;1&display=swap');
+
+/* ─── TOKENS ─── */
+:root {
+  --hv-bg:      #080114;
+  --hv-deep:    #0f0228;
+  --hv-pink:    #ff6eb4;
+  --hv-pink2:   #ffb3e0;
+  --hv-cyan:    #00e5ff;
+  --hv-cyan2:   #80f4ff;
+  --hv-purple:  #b44fff;
+  --hv-purple2: #d9a0ff;
+  --hv-gold:    #ffe066;
+  --hv-gold2:   #fff0a0;
+  --hv-mint:    #00ffb3;
+  --hv-mint2:   #80ffe8;
+  --hv-white:   #f0e8ff;
+  --hv-dim:     #7a6a99;
+  --font-title: 'Cinzel Decorative', serif;
+  --font-body:  'IM Fell English', serif;
+  --glow-pink:   0 0 20px #ff6eb470, 0 0 60px #ff6eb430;
+  --glow-purple: 0 0 20px #b44fff70, 0 0 60px #b44fff30;
+  --glow-gold:   0 0 20px #ffe06670, 0 0 60px #ffe06630;
+}
+
+/* ─── RESET ─── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; overflow: hidden; }
+a { color: inherit; text-decoration: none; }
+body.heaven-page { background: var(--hv-bg); color: var(--hv-white); font-family: var(--font-body); cursor: none; }
+
+body.heaven-page::before {
+  content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 998; opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 200px 200px;
+}
+
+/* ─── CANVAS ─── */
+#heaven-canvas { position: fixed; inset: 0; pointer-events: none; z-index: 1; }
+
+/* ─── CUSTOM CURSOR ─── */
+#cursor {
+  position: fixed; pointer-events: none; z-index: 9999;
+  width: 10px; height: 10px; border-radius: 50%;
+  border: 1px solid var(--hv-purple2);
+  transform: translate(-50%, -50%);
+  transition: width 0.2s, height 0.2s, border-color 0.2s, background 0.2s;
+  mix-blend-mode: screen;
+}
+#cursor.hovering { width: 26px; height: 26px; border-color: var(--hv-pink); background: #ff6eb412; }
+#cursor.decorating { width: 18px; height: 18px; border-color: var(--hv-gold); background: #ffe06610; }
+
+/* ─── VIEWPORT + WORLD ─── */
+#garden-viewport { position: fixed; inset: 0; overflow: hidden; z-index: 5; }
+#garden-world { position: absolute; width: 2800px; height: 2000px; will-change: transform; }
+
+/* ─── BIRD FLYOUT ─── */
+@keyframes birdFly {
+  from { transform: translate(0,0) scale(1); opacity: 1; }
+  to   { transform: translate(var(--bx,40px), var(--by,-60px)) scale(0.4); opacity: 0; }
+}
+
+/* ─── NAV ─── */
+.heaven-nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 1.4rem 2rem;
+  background: linear-gradient(to bottom, #08011490, transparent);
+  pointer-events: none;
+}
+.heaven-nav > * { pointer-events: all; }
+.heaven-nav-home {
+  font-family: var(--font-body); font-style: italic; font-size: 0.75rem;
+  letter-spacing: 0.15em; color: var(--hv-dim); opacity: 0.55; transition: opacity 0.3s, color 0.3s;
+}
+.heaven-nav-home:hover { opacity: 1; color: var(--hv-pink); }
+.heaven-nav-title {
+  font-family: var(--font-title); font-size: clamp(0.42rem, 0.9vw, 0.55rem);
+  letter-spacing: 0.45em; text-transform: uppercase; color: var(--hv-dim); opacity: 0.4;
+}
+.wander-hint {
+  font-family: var(--font-body); font-style: italic; font-size: 0.68rem;
+  letter-spacing: 0.15em; color: var(--hv-dim); pointer-events: none;
+  animation: hintFade 5s ease-out 1.5s both;
+}
+@keyframes hintFade { 0%{opacity:0} 20%{opacity:0.5} 75%{opacity:0.5} 100%{opacity:0} }
+
+/* ─── DECORATIVE MESSAGE ─── */
+#garden-msg {
+  position: fixed; bottom: 2.5rem; left: 50%; transform: translateX(-50%);
+  font-family: var(--font-body); font-style: italic; font-size: 0.82rem;
+  color: var(--hv-white); letter-spacing: 0.1em; text-align: center;
+  pointer-events: none; z-index: 200; opacity: 0;
+  text-shadow: 0 0 12px var(--hv-purple2);
+  transition: opacity 0.4s; white-space: nowrap;
+}
+#garden-msg.visible { opacity: 0.7; }
+
+/* ─── MINIMAP ─── */
+#minimap {
+  position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 100;
+  width: 112px; height: 80px;
+  border: 1px solid #b44fff28; background: #0f022875;
+  backdrop-filter: blur(4px);
+}
+#minimap-vp {
+  position: absolute; border: 1px solid var(--hv-purple);
+  background: #b44fff14; pointer-events: none;
+}
+.mm-dot {
+  position: absolute; width: 5px; height: 5px;
+  border-radius: 50%; transform: translate(-50%,-50%); opacity: 0.7;
+}
+
+/* ─────────────────────────────────────────────
+   SHARED GROUND SHADOW under all garden objects
+───────────────────────────────────────────── */
+.garden-crystal, .garden-tree, .garden-fountain, .garden-flower-patch,
+.garden-mushroom-cluster, .garden-lantern {
+  position: absolute;
+}
+
+/* ═══════════════════════════════════════════════
+   CRYSTAL ALTARS — site landmarks
+═══════════════════════════════════════════════ */
+.garden-crystal {
+  transform: translate(-50%, -100%);
+  display: flex; flex-direction: column; align-items: center; gap: 0;
+  cursor: pointer; z-index: 20; padding-bottom: 6px;
+}
+
+/* The gem body via clip-path on ::before */
+.crystal-gem {
+  width: 40px; height: 72px; position: relative;
+  animation: crystalFloat 4.5s ease-in-out infinite;
+}
+.crystal-gem::before {
+  content: ''; position: absolute; inset: 0;
+  clip-path: polygon(50% 0%, 88% 18%, 96% 56%, 65% 98%, 35% 98%, 4% 56%, 12% 18%);
+  background: linear-gradient(155deg, var(--cx-light,#b0f4ff) 0%, var(--cx-mid,#00e5ff) 45%, var(--cx-dark,#0070aa) 100%);
+  filter: drop-shadow(0 0 10px var(--cx-glow,#00e5ff80));
+  transition: filter 0.35s;
+}
+/* Gloss highlight */
+.crystal-gem::after {
+  content: ''; position: absolute;
+  left: 18px; top: 12px; width: 5px; height: 28px;
+  background: linear-gradient(to bottom, rgba(255,255,255,0.5), rgba(255,255,255,0.05));
+  clip-path: polygon(0 0, 100% 8%, 90% 100%, 0% 94%);
+  transform: rotate(-4deg);
+}
+.garden-crystal:hover .crystal-gem::before {
+  filter: drop-shadow(0 0 22px var(--cx-glow,#00e5ff80)) brightness(1.25);
+}
+@keyframes crystalFloat {
+  0%,100% { transform: translateY(0) rotate(0deg); }
+  35%      { transform: translateY(-8px) rotate(-1.2deg); }
+  70%      { transform: translateY(-4px) rotate(1deg); }
+}
+/* Stagger per sibling */
+.garden-crystal:nth-child(2)  .crystal-gem { animation-delay: -1.5s; }
+.garden-crystal:nth-child(3)  .crystal-gem { animation-delay: -3s; }
+.garden-crystal:nth-child(4)  .crystal-gem { animation-delay: -0.8s; }
+.garden-crystal:nth-child(5)  .crystal-gem { animation-delay: -2.2s; }
+.garden-crystal:nth-child(6)  .crystal-gem { animation-delay: -3.8s; }
+.garden-crystal:nth-child(7)  .crystal-gem { animation-delay: -1.1s; }
+.garden-crystal:nth-child(8)  .crystal-gem { animation-delay: -2.8s; }
+.garden-crystal:nth-child(9)  .crystal-gem { animation-delay: -0.4s; }
+
+.crystal-base-glow {
+  width: 54px; height: 11px;
+  background: radial-gradient(ellipse, var(--cx-glow,#00e5ff70), transparent);
+  filter: blur(7px); margin-top: -5px;
+}
+.crystal-pedestal {
+  width: 46px; height: 8px;
+  background: linear-gradient(to bottom, #2a2a4a, #141420);
+  border-radius: 2px; border-top: 1px solid #ffffff12;
+}
+.crystal-virtue-text {
+  font-family: var(--font-title); font-size: clamp(0.4rem, 0.85vw, 0.52rem);
+  letter-spacing: 0.3em; text-transform: uppercase; color: var(--hv-dim);
+  margin-top: 5px; white-space: nowrap; transition: color 0.3s, text-shadow 0.3s;
+}
+.garden-crystal:hover .crystal-virtue-text {
+  color: var(--hv-white);
+  text-shadow: 0 0 10px var(--cx-glow,#00e5ff80);
+}
+.crystal-enter-hint {
+  font-family: var(--font-body); font-style: italic; font-size: 0.5rem;
+  letter-spacing: 0.12em; color: var(--hv-dim); opacity: 0;
+  transform: translateY(3px); transition: opacity 0.3s, transform 0.3s; margin-top: 1px;
+}
+.garden-crystal:hover .crystal-enter-hint { opacity: 0.6; transform: translateY(0); }
+
+/* Ground glow pool */
+.garden-crystal::after {
+  content: ''; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
+  width: 64px; height: 14px;
+  background: radial-gradient(ellipse, var(--cx-glow,#00e5ff50), transparent);
+  filter: blur(5px); border-radius: 50%; pointer-events: none;
+}
+
+/* Colour variants */
+.garden-crystal[data-color="cyan"]   { --cx-light:#b0f4ff; --cx-mid:#00e5ff; --cx-dark:#0070aa; --cx-glow:#00e5ff80; }
+.garden-crystal[data-color="pink"]   { --cx-light:#ffc0e8; --cx-mid:#ff6eb4; --cx-dark:#aa2060; --cx-glow:#ff6eb480; }
+.garden-crystal[data-color="purple"] { --cx-light:#d9a0ff; --cx-mid:#b44fff; --cx-dark:#601090; --cx-glow:#b44fff80; }
+.garden-crystal[data-color="gold"]   { --cx-light:#fff4a0; --cx-mid:#ffe066; --cx-dark:#aa8800; --cx-glow:#ffe06680; }
+.garden-crystal[data-color="mint"]   { --cx-light:#a0ffda; --cx-mid:#00ffb3; --cx-dark:#00aa70; --cx-glow:#00ffb380; }
+
+/* ═══════════════════════════════════════════════
+   TREES
+═══════════════════════════════════════════════ */
+.garden-tree {
+  transform: translate(-50%, -100%);
+  display: flex; flex-direction: column; align-items: center;
+  cursor: pointer; z-index: 12; padding-bottom: 2px;
+}
+.tree-canopy {
+  width: 84px; height: 96px; position: relative;
+  background: radial-gradient(circle at 38% 32%, #265a3a 0%, #0e2e1c 55%, #050f08 100%);
+  border-radius: 48% 52% 50% 50% / 62% 56% 44% 38%;
+  box-shadow: inset -6px -8px 18px #00000055, 0 0 14px #00ff8808;
+  animation: treeSway 7s ease-in-out infinite; transform-origin: bottom center;
+  overflow: hidden;
+}
+.tree-canopy::before {
+  content: ''; position: absolute; bottom: -12px; left: 12%; width: 76%; height: 50%;
+  background: radial-gradient(ellipse, #0b2418, #030a06); border-radius: 50%;
+}
+.tree-canopy::after {
+  content: ''; position: absolute; top: 14%; left: 22%; width: 32%; height: 26%;
+  background: radial-gradient(ellipse, #3a8a5070, transparent); border-radius: 50%;
+}
+.garden-tree.large .tree-canopy { width: 112px; height: 126px; }
+.garden-tree.small .tree-canopy { width: 58px; height: 66px; }
+@keyframes treeSway { 0%,100%{transform:rotate(-1.5deg)} 50%{transform:rotate(1.5deg)} }
+.garden-tree:nth-child(2) .tree-canopy { animation-delay: -2.2s; }
+.garden-tree:nth-child(3) .tree-canopy { animation-delay: -4.4s; }
+.garden-tree:nth-child(4) .tree-canopy { animation-delay: -1.1s; }
+.garden-tree:nth-child(5) .tree-canopy { animation-delay: -3.3s; }
+.tree-trunk {
+  width: 12px; height: 34px; margin-top: -8px; z-index: 1;
+  background: linear-gradient(to right, #150702, #3d1a06, #150702);
+  border-radius: 3px 3px 1px 1px;
+}
+/* Ground shadow */
+.garden-tree::after {
+  content: ''; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
+  width: 72px; height: 12px;
+  background: radial-gradient(ellipse, rgba(0,0,0,0.38), transparent);
+  border-radius: 50%; pointer-events: none;
+}
+/* Shake on click */
+.garden-tree.shake .tree-canopy { animation: treeShake 0.7s ease-out forwards; }
+@keyframes treeShake {
+  0%{transform:rotate(-1.5deg)} 15%{transform:rotate(9deg)} 30%{transform:rotate(-8deg)}
+  50%{transform:rotate(5deg)} 68%{transform:rotate(-4deg)} 85%{transform:rotate(2deg)} 100%{transform:rotate(-1.5deg)}
+}
+
+/* ═══════════════════════════════════════════════
+   FOUNTAIN
+═══════════════════════════════════════════════ */
+.garden-fountain {
+  transform: translate(-50%, -100%);
+  display: flex; flex-direction: column; align-items: center;
+  cursor: pointer; z-index: 18;
+}
+.fountain-spout {
+  width: 3px; height: 24px;
+  background: linear-gradient(to top, #00e5ff55, #80f4ffbb);
+  border-radius: 2px; filter: blur(1.5px);
+  animation: spoutPulse 1.8s ease-in-out infinite; margin-bottom: -2px;
+}
+@keyframes spoutPulse { 0%,100%{height:24px;opacity:0.55} 50%{height:30px;opacity:0.9} }
+.fountain-bowl-top {
+  width: 36px; height: 10px; z-index: 1;
+  background: linear-gradient(to bottom, #1e3a5a, #0a1a2e);
+  border-radius: 50%; border: 1px solid #00e5ff22;
+}
+.fountain-column {
+  width: 10px; height: 44px;
+  background: linear-gradient(to bottom, #2a3a5a, #080a1a);
+  border-radius: 5px 5px 2px 2px; border: 1px solid #ffffff0e;
+}
+.fountain-base-wrap {
+  position: relative; width: 100px; height: 28px;
+  display: flex; align-items: center; justify-content: center;
+}
+.fountain-base {
+  width: 100px; height: 18px;
+  background: linear-gradient(to bottom, #0a1a2e, #050a12);
+  border-radius: 50%; border: 1px solid #00e5ff1a;
+  box-shadow: 0 0 12px #00e5ff12;
+}
+.fountain-ring {
+  position: absolute; border-radius: 50%;
+  border: 1px solid #00e5ff50;
+  animation: fRing 2.4s ease-out infinite; pointer-events: none;
+}
+.fountain-ring.r1 { width: 22px; height: 10px; animation-delay: 0s; }
+.fountain-ring.r2 { width: 48px; height: 18px; animation-delay: 0.75s; }
+.fountain-ring.r3 { width: 74px; height: 24px; animation-delay: 1.5s; }
+@keyframes fRing { 0%{transform:scale(0.5);opacity:0.6} 100%{transform:scale(1.25);opacity:0} }
+.garden-fountain::after {
+  content: ''; position: absolute; bottom: -5px; left: 50%; transform: translateX(-50%);
+  width: 80px; height: 12px;
+  background: radial-gradient(ellipse, rgba(0,180,255,0.12), transparent);
+  border-radius: 50%; pointer-events: none;
+}
+/* Ripple burst on click */
+.garden-fountain.ripple .fountain-ring { animation-duration: 0.9s !important; }
+
+/* ═══════════════════════════════════════════════
+   FLOWER PATCHES
+═══════════════════════════════════════════════ */
+.garden-flower-patch {
+  transform: translate(-50%, -100%);
+  display: flex; align-items: flex-end; gap: 7px;
+  cursor: pointer; z-index: 14; padding-bottom: 2px;
+}
+.garden-flower { display: flex; flex-direction: column; align-items: center; }
+.flower-head {
+  width: 14px; height: 14px; border-radius: 50%; position: relative;
+  animation: flowerBob 3.5s ease-in-out infinite;
+}
+/* Petals via radial-gradients */
+.flower-head::before {
+  content: ''; position: absolute; inset: -5px;
+  background:
+    radial-gradient(circle 4px at 50% 2px, currentColor, transparent 6px),
+    radial-gradient(circle 4px at calc(100% - 1px) 50%, currentColor, transparent 6px),
+    radial-gradient(circle 4px at 50% calc(100% - 2px), currentColor, transparent 6px),
+    radial-gradient(circle 4px at 1px 50%, currentColor, transparent 6px),
+    radial-gradient(circle 3px at 87% 13%, currentColor, transparent 5px),
+    radial-gradient(circle 3px at 87% 87%, currentColor, transparent 5px),
+    radial-gradient(circle 3px at 13% 87%, currentColor, transparent 5px),
+    radial-gradient(circle 3px at 13% 13%, currentColor, transparent 5px);
+  opacity: 0.55;
+}
+/* Soft glow */
+.flower-head::after {
+  content: ''; position: absolute; inset: -4px; border-radius: 50%;
+  background: currentColor; opacity: 0.1; filter: blur(5px);
+}
+@keyframes flowerBob {
+  0%,100%{transform:translateY(0) rotate(-4deg)} 50%{transform:translateY(-5px) rotate(4deg)}
+}
+.garden-flower:nth-child(2) .flower-head { animation-delay: -1.1s; }
+.garden-flower:nth-child(3) .flower-head { animation-delay: -2.2s; }
+.garden-flower:nth-child(4) .flower-head { animation-delay: -0.6s; }
+.garden-flower:nth-child(5) .flower-head { animation-delay: -1.8s; }
+.flower-stem {
+  width: 2px; height: var(--sh, 24px);
+  background: linear-gradient(to bottom, #2a7040, #0e2a16); border-radius: 1px; margin-top: -2px;
+}
+/* Color variants */
+.garden-flower.pink   .flower-head { background: #ff6eb4; color: #ff6eb4; }
+.garden-flower.purple .flower-head { background: #b44fff; color: #b44fff; }
+.garden-flower.gold   .flower-head { background: #ffe066; color: #ffe066; }
+.garden-flower.cyan   .flower-head { background: #00e5ff; color: #00e5ff; }
+.garden-flower.white  .flower-head { background: #f0e8ff; color: #f0e8ff; }
+/* Bloom on click */
+.garden-flower.bloom .flower-head { animation: flowerBloom 0.55s ease-out forwards; }
+@keyframes flowerBloom {
+  0%{transform:scale(1)} 45%{transform:scale(1.7) rotate(10deg);filter:brightness(1.9)} 100%{transform:scale(1)}
+}
+
+/* ═══════════════════════════════════════════════
+   MUSHROOMS
+═══════════════════════════════════════════════ */
+.garden-mushroom-cluster {
+  transform: translate(-50%, -100%);
+  display: flex; align-items: flex-end; gap: 6px;
+  cursor: pointer; z-index: 14; padding-bottom: 2px;
+}
+.garden-mushroom { display: flex; flex-direction: column; align-items: center; }
+.mushroom-cap { border-radius: 50% 50% 0 0; transition: filter 0.3s; }
+.mushroom-stem { border-radius: 2px 2px 1px 1px; background: linear-gradient(to bottom, #d4c4a870, #a0806055); }
+
+.garden-mushroom.large  .mushroom-cap  { width: 30px; height: 18px; }
+.garden-mushroom.large  .mushroom-stem { width: 10px; height: 14px; }
+.garden-mushroom.medium .mushroom-cap  { width: 22px; height: 14px; }
+.garden-mushroom.medium .mushroom-stem { width: 7px;  height: 10px; }
+.garden-mushroom.small  .mushroom-cap  { width: 16px; height: 10px; }
+.garden-mushroom.small  .mushroom-stem { width: 5px;  height: 7px; }
+
+.garden-mushroom.pink   .mushroom-cap { background: radial-gradient(ellipse at 40% 28%, #ff9de2, #aa2060); filter: drop-shadow(0 0 5px #ff6eb440); }
+.garden-mushroom.purple .mushroom-cap { background: radial-gradient(ellipse at 40% 28%, #c880ff, #601090); filter: drop-shadow(0 0 5px #b44fff40); }
+.garden-mushroom.gold   .mushroom-cap { background: radial-gradient(ellipse at 40% 28%, #fff4a0, #806800); filter: drop-shadow(0 0 5px #ffe06640); }
+.garden-mushroom.cyan   .mushroom-cap { background: radial-gradient(ellipse at 40% 28%, #80f4ff, #007090); filter: drop-shadow(0 0 5px #00e5ff40); }
+
+/* Glow pulse on click */
+.garden-mushroom-cluster.glow-pulse .mushroom-cap { animation: shroomPulse 0.65s ease-out; }
+@keyframes shroomPulse { 0%,100%{filter:drop-shadow(0 0 5px currentColor)} 50%{filter:drop-shadow(0 0 18px currentColor) brightness(1.7)} }
+
+/* ═══════════════════════════════════════════════
+   LANTERNS
+═══════════════════════════════════════════════ */
+.garden-lantern {
+  transform: translate(-50%, -50%);
+  display: flex; flex-direction: column; align-items: center;
+  cursor: pointer; z-index: 16;
+  animation: lanternSway 6s ease-in-out infinite; transform-origin: top center;
+}
+.garden-lantern:nth-child(2) { animation-delay: -3s; }
+.garden-lantern:nth-child(3) { animation-delay: -1.5s; }
+
+.lantern-chain { width: 1px; height: 30px; background: linear-gradient(to bottom, transparent, #505060); }
+.lantern-top-cap { width: 24px; height: 5px; background: linear-gradient(to right, #606080, #404050, #606080); border-radius: 3px 3px 0 0; }
+.lantern-body {
+  width: 20px; height: 28px; position: relative;
+  border: 1px solid #ff9a3055;
+  background: radial-gradient(ellipse at 50% 40%, #ffe08892, #ff880018);
+  box-shadow: 0 0 14px #ff880065, 0 0 30px #ff880025;
+}
+.lantern-body::before { content:''; position:absolute; top:0; bottom:0; left:50%; transform:translateX(-50%); width:1px; background:#ff880028; }
+.lantern-body::after  { content:''; position:absolute; left:0; right:0; top:50%; transform:translateY(-50%); height:1px; background:#ff880028; }
+.lantern-bottom-cap { width: 24px; height: 5px; background: linear-gradient(to right, #606080, #404050, #606080); border-radius: 0 0 5px 5px; }
+.lantern-glow-pool {
+  width: 44px; height: 12px; margin-top: 5px;
+  background: radial-gradient(ellipse, #ff880028, transparent);
+  border-radius: 50%; filter: blur(3px);
+  animation: glowPulse 2.2s ease-in-out infinite;
+}
+@keyframes glowPulse { 0%,100%{opacity:0.45} 50%{opacity:1} }
+@keyframes lanternSway { 0%,100%{transform:translate(-50%,-50%) rotate(-4deg)} 50%{transform:translate(-50%,-50%) rotate(4deg)} }
+/* Fast swing on click */
+.garden-lantern.swing-fast { animation: lanternSwingFast 0.9s ease-out; }
+@keyframes lanternSwingFast {
+  0%{transform:translate(-50%,-50%) rotate(-4deg)} 18%{transform:translate(-50%,-50%) rotate(18deg)}
+  36%{transform:translate(-50%,-50%) rotate(-14deg)} 55%{transform:translate(-50%,-50%) rotate(9deg)}
+  74%{transform:translate(-50%,-50%) rotate(-6deg)} 90%{transform:translate(-50%,-50%) rotate(3deg)} 100%{transform:translate(-50%,-50%) rotate(-4deg)}
+}
+
+/* ═══════════════════════════════════════════════
+   SVG PATH LAYER
+═══════════════════════════════════════════════ */
+#garden-paths { position:absolute; inset:0; pointer-events:none; z-index:8; overflow:visible; }
+
+/* ═══════════════════════════════════════════════
+   PORTAL OVERLAY
+═══════════════════════════════════════════════ */
+#heaven-portal {
+  position: fixed; inset: 0; z-index: 500;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 2rem; text-align: center;
+  opacity: 0; pointer-events: none; transition: opacity 0.45s;
+  background: radial-gradient(ellipse 80% 80% at 50% 50%, #1e0550f2 0%, #080114f6 100%);
+  backdrop-filter: blur(14px);
+}
+#heaven-portal.open { opacity: 1; pointer-events: all; }
+.portal-close {
+  position: absolute; top: 2rem; right: 2rem;
+  font-family: var(--font-title); font-size: 0.58rem; letter-spacing: 0.3em;
+  color: var(--hv-dim); cursor: pointer; transition: color 0.3s; text-transform: uppercase;
+  background: none; border: none;
+}
+.portal-close:hover { color: var(--hv-pink); }
+.portal-virtue-label {
+  font-family: var(--font-body); font-style: italic;
+  font-size: clamp(0.65rem,1.5vw,0.82rem); letter-spacing: 0.3em;
+  color: var(--hv-dim); text-transform: uppercase; margin-bottom: 0.8rem;
+  opacity: 0; transform: translateY(10px);
+  transition: opacity 0.5s 0.15s, transform 0.5s 0.15s;
+}
+#heaven-portal.open .portal-virtue-label { opacity: 1; transform: translateY(0); }
+.portal-virtue-name {
+  font-family: var(--font-title); font-weight: 900;
+  font-size: clamp(2rem,6vw,4rem); letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--hv-pink2); text-shadow: var(--glow-pink); margin-bottom: 1rem;
+  opacity: 0; transform: translateY(14px);
+  transition: opacity 0.5s 0.28s, transform 0.5s 0.28s;
+}
+#heaven-portal.open .portal-virtue-name { opacity: 1; transform: translateY(0); }
+.portal-rule {
+  display: flex; align-items: center; gap: 1rem; margin: 1rem auto;
+  width: clamp(160px,38%,340px); opacity: 0; transition: opacity 0.5s 0.42s;
+}
+#heaven-portal.open .portal-rule { opacity: 1; }
+.portal-rule::before,.portal-rule::after {
+  content: ''; flex: 1; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--hv-purple));
+}
+.portal-rule::after { background: linear-gradient(90deg, var(--hv-purple), transparent); }
+.portal-rule-icon { color: var(--hv-purple); font-size: 0.65rem; }
+.portal-site-name {
+  font-family: var(--font-title); font-size: clamp(0.9rem,2.5vw,1.5rem);
+  font-weight: 700; letter-spacing: 0.08em; color: var(--hv-gold);
+  text-shadow: var(--glow-gold); margin-bottom: 0.8rem;
+  opacity: 0; transform: translateY(10px); transition: opacity 0.5s 0.5s, transform 0.5s 0.5s;
+}
+#heaven-portal.open .portal-site-name { opacity: 1; transform: translateY(0); }
+.portal-description {
+  font-family: var(--font-body); font-style: italic;
+  font-size: clamp(0.82rem,1.7vw,1rem); color: var(--hv-dim);
+  line-height: 1.75; max-width: 500px; margin: 0 auto 2.5rem;
+  opacity: 0; transform: translateY(8px); transition: opacity 0.5s 0.62s, transform 0.5s 0.62s;
+}
+#heaven-portal.open .portal-description { opacity: 1; transform: translateY(0); }
+.portal-enter-btn {
+  display: inline-flex; align-items: center; gap: 0.7rem;
+  font-family: var(--font-title); font-size: clamp(0.6rem,1.3vw,0.78rem);
+  font-weight: 700; letter-spacing: 0.35em; text-transform: uppercase;
+  color: var(--hv-white); background: transparent;
+  border: 1px solid var(--hv-purple); padding: 0.9em 2.5em; cursor: pointer;
+  position: relative; overflow: hidden; text-decoration: none;
+  opacity: 0; transform: translateY(8px);
+  transition: opacity 0.5s 0.78s, transform 0.5s 0.78s, border-color 0.3s, color 0.3s, box-shadow 0.3s;
+}
+#heaven-portal.open .portal-enter-btn { opacity: 1; transform: translateY(0); }
+.portal-enter-btn::before {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(90deg, transparent, #b44fff28, transparent);
+  transform: translateX(-110%); transition: transform 0.4s;
+}
+.portal-enter-btn:hover::before { transform: translateX(110%); }
+.portal-enter-btn:hover { border-color: var(--hv-pink); color: var(--hv-pink2); box-shadow: var(--glow-pink); }
+@keyframes btnHeavenPulse { 0%,100%{box-shadow:0 0 10px #b44fff35} 50%{box-shadow:0 0 28px #b44fff70,0 0 55px #b44fff25} }
+#heaven-portal.open .portal-enter-btn { animation: btnHeavenPulse 3s ease-in-out 1.2s infinite; }
+#heaven-portal.open .portal-enter-btn:hover { animation: none; }
+
+/* ─── SCROLLBAR ─── */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: var(--hv-bg); }
+::-webkit-scrollbar-thumb { background: var(--hv-purple); border-radius: 2px; }
